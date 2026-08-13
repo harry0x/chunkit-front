@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { Scissors, Loader2 } from "lucide-react";
+import { Scissors } from "lucide-react";
 import { getJobStatus, type StatusResponse } from "../lib/api";
 
 interface ProcessingViewProps {
@@ -15,7 +15,7 @@ export function ProcessingView({
   jobId,
   onDone,
   onError,
-  percent,
+
   onPercentUpdate,
 }: ProcessingViewProps) {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -48,8 +48,6 @@ export function ProcessingView({
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, [jobId, onDone, onError, onPercentUpdate]);
-
-  const displayPercent = Math.min(percent, 99);
 
   const stages = [
     { label: "Upload", done: true, active: false },
