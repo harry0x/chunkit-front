@@ -1,9 +1,44 @@
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Scissors, Sparkles, Sun, Moon } from "lucide-react";
+import {
+  Scissors,
+  Sparkles,
+  Sun,
+  Moon,
+  User,
+  Crown,
+  LogOut,
+  Shield,
+} from "lucide-react";
 import { useTheme } from "../theme/ThemeContext";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export function Header() {
   const { theme, toggleTheme } = useTheme();
+  const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleLogout = () => {
+    logout();
+    setDropdownOpen(false);
+    navigate("/");
+  };
 
   return (
     <motion.header
@@ -13,28 +48,36 @@ export function Header() {
       className="w-full relative z-10"
       style={{ padding: "1.25rem 1.5rem" }}
     >
-      <div
-        className="mx-auto flex items-center justify-between w-full"
-      >
+      <div className="mx-auto flex items-center justify-between w-full">
         {/* Logo */}
-        <div className="flex items-center" style={{ gap: "0.75rem" }}>
+        <Link
+          to="/"
+          className="flex items-center cursor-pointer"
+          style={{ gap: "0.75rem" }}
+        >
           <div className="relative">
             <div
               className="flex items-center justify-center rounded-xl"
               style={{
                 width: "2.75rem",
                 height: "2.75rem",
-                background: "linear-gradient(135deg, var(--accent-start), var(--accent-mid), var(--accent-end))",
+                background:
+                  "linear-gradient(135deg, var(--accent-start), var(--accent-mid), var(--accent-end))",
                 boxShadow: "0 4px 15px rgba(99, 102, 241, 0.25)",
               }}
             >
-              <Scissors className="text-white" style={{ width: "1.25rem", height: "1.25rem" }} strokeWidth={2.5} />
+              <Scissors
+                className="text-white"
+                style={{ width: "1.25rem", height: "1.25rem" }}
+                strokeWidth={2.5}
+              />
             </div>
             <div
               className="absolute rounded-xl"
               style={{
                 inset: "-4px",
-                background: "linear-gradient(135deg, var(--accent-start), var(--accent-end))",
+                background:
+                  "linear-gradient(135deg, var(--accent-start), var(--accent-end))",
                 opacity: 0.15,
                 filter: "blur(10px)",
                 zIndex: -1,
@@ -59,31 +102,85 @@ export function Header() {
               Video Splitter
             </p>
           </div>
-        </div>
+        </Link>
 
-        {/* Right side: Badge and Theme Toggle */}
-        <div className="flex items-center gap-4">
-          {/* Right badge */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 }}
-            className="hidden sm:flex items-center rounded-full"
-            style={{
-              gap: "0.5rem",
-              padding: "0.5rem 1rem",
-              background: "var(--badge-bg)",
-              border: "1px solid var(--badge-border)",
-            }}
-          >
-            <Sparkles style={{ width: "0.875rem", height: "0.875rem", color: "var(--accent-mid)" }} />
-            <span
-              className="font-medium"
-              style={{ fontSize: "0.75rem", color: "var(--pill-text)" }}
+        {/* Right side: Auth, Subscription, Theme Toggle */}
+        <div className="flex items-center gap-2">
+          {isAuthenticated ? (
+            <div className="flex items-center gap-2 mr-1 sm:mr-2">
+              {user?.role !== "admin" && (
+                <Link
+                  to="/pricing"
+                  className="flex items-center gap-2 font-medium text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  <Crown style={{ width: "1rem", height: "1rem" }} />
+                  <span className="hidden sm:inline">Subscription</span>
+                </Link>
+              )}
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className="p-1.5 rounded-full cursor-pointer transition-colors"
+                  style={{
+                    background: "var(--badge-bg)",
+                    border: "1px solid var(--badge-border)",
+                    color: "var(--text-primary)",
+                  }}
+                >
+                  <User style={{ width: "1.1rem", height: "1.1rem" }} />
+                </button>
+
+                {dropdownOpen && (
+                  <div
+                    className="absolute right-0 mt-2 w-48 z-50"
+                    style={{ top: "100%" }}
+                  >
+                    <motion.div
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      className="w-full rounded-xl shadow-lg border overflow-hidden glass-card"
+                    >
+                      <div className="py-1 flex flex-col">
+                        {user?.role === "admin" ? (
+                          <Link
+                            to="/admin"
+                            onClick={() => setDropdownOpen(false)}
+                            className="flex items-center gap-2 px-4 py-3 text-sm text-foreground hover:bg-white/10 transition-colors border-b border-border/50"
+                          >
+                            <Shield className="w-4 h-4 text-primary" />
+                            Admin Dashboard
+                          </Link>
+                        ) : (
+                          <Link
+                            to="/profile"
+                            onClick={() => setDropdownOpen(false)}
+                            className="flex items-center gap-2 px-4 py-3 text-sm text-foreground hover:bg-white/10 transition-colors border-b border-border/50"
+                          >
+                            <User className="w-4 h-4" />
+                            Profile Settings
+                          </Link>
+                        )}
+                        <button
+                          onClick={handleLogout}
+                          className="w-full flex items-center gap-2 px-4 py-3 text-sm text-red-500 hover:bg-red-500/10 transition-colors text-left"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          Logout
+                        </button>
+                      </div>
+                    </motion.div>
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              className="block text-sm font-medium text-muted-foreground hover:text-primary transition-colors mr-1 sm:mr-2"
             >
-              Free • No sign-up • Instant
-            </span>
-          </motion.div>
+              Sign in
+            </Link>
+          )}
 
           {/* Theme Toggle */}
           <motion.button
@@ -91,7 +188,7 @@ export function Header() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.4 }}
             onClick={toggleTheme}
-            className="p-2 rounded-full cursor-pointer transition-colors"
+            className="p-1.5 rounded-full transition-all duration-300 relative group overflow-hidden"
             style={{
               background: "var(--badge-bg)",
               border: "1px solid var(--badge-border)",
@@ -99,11 +196,13 @@ export function Header() {
             }}
             aria-label="Toggle theme"
           >
-            {theme === "dark" ? (
-              <Sun style={{ width: "1.25rem", height: "1.25rem" }} />
-            ) : (
-              <Moon style={{ width: "1.25rem", height: "1.25rem" }} />
-            )}
+            <div className="relative z-10 flex items-center justify-center">
+              {theme === "dark" ? (
+                <Sun style={{ width: "1.1rem", height: "1.1rem" }} />
+              ) : (
+                <Moon style={{ width: "1.1rem", height: "1.1rem" }} />
+              )}
+            </div>
           </motion.button>
         </div>
       </div>

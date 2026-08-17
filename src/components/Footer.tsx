@@ -57,7 +57,7 @@ export function Footer() {
                 fontWeight: 500,
               }}
             >
-              No data stored
+              Secure & Private
             </span>
           </div>
           <div
@@ -83,7 +83,7 @@ export function Footer() {
                 fontWeight: 500,
               }}
             >
-              Fully anonymous
+              Safe Encrypted Access
             </span>
           </div>
         </div>
