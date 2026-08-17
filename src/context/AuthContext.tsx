@@ -1,0 +1,78 @@
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { api } from '../lib/api';
+
+export interface User {
+  id: string;
+  fullName: string;
+  email: string;
+  role: 'user' | 'admin';
+  isActive: boolean;
+}
+
+interface AuthContextType {
+  user: User | null;
+  token: string | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  login: (token: string, user: User) => void;
+  logout: () => void;
+  updateUser: (user: User) => void;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const initAuth = async () => {
+      if (token) {
+        try {
+          api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          const response = await api.get('/user/profile');
+          setUser(response.data.user);
+        } catch (error) {
+          console.error("Token verification failed", error);
+          logout();
+        }
+      }
+      setIsLoading(false);
+    };
+
+    initAuth();
+  }, [token]);
+
+  const login = (newToken: string, newUser: User) => {
+    localStorage.setItem('token', newToken);
+    setToken(newToken);
+    setUser(newUser);
+    api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+  };
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    setToken(null);
+    setUser(null);
+    delete api.defaults.headers.common['Authorization'];
+  };
+
+  const updateUser = (updatedUser: User) => {
+    setUser(updatedUser);
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, token, isAuthenticated: !!user, isLoading, login, logout, updateUser }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
