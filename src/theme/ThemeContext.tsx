@@ -11,45 +11,26 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(() => {
-    // 1. Check local storage
-    const saved = localStorage.getItem("theme");
-    if (saved === "light" || saved === "dark") {
-      return saved;
-    }
-    // 2. Check system preference
-    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      return "dark";
-    }
-    // 3. Fallback to dark (as was the original theme)
-    return "dark";
-  });
+  const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
     const root = document.documentElement;
-    if (theme === "dark") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
-    localStorage.setItem("theme", theme);
-  }, [theme]);
-
-  // Sync with system preference changes
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    const handleChange = (e: MediaQueryListEvent) => {
-      // Auto-switch based on system if desired, but user preference usually overrides.
-      // We'll let it switch if the user changes system theme.
-      setTheme(e.matches ? "dark" : "light");
-    };
-    
-    mediaQuery.addEventListener("change", handleChange);
-    return () => mediaQuery.removeEventListener("change", handleChange);
+    root.classList.remove("dark");
+    localStorage.setItem("theme", "light");
   }, []);
 
   const toggleTheme = () => {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+    setTheme((prev) => {
+      const newTheme = prev === "light" ? "dark" : "light";
+      const root = document.documentElement;
+      if (newTheme === "dark") {
+        root.classList.add("dark");
+      } else {
+        root.classList.remove("dark");
+      }
+      localStorage.setItem("theme", newTheme);
+      return newTheme;
+    });
   };
 
   return (
