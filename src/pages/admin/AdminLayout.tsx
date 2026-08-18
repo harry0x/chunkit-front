@@ -1,7 +1,7 @@
-import { Link, Outlet, useLocation } from 'react-router-dom';
-import { Users, CreditCard, Settings, LogOut, Home, Sun, Moon } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
-import { useTheme } from '../../theme/ThemeContext';
+import { Link, Outlet, useLocation } from "react-router-dom";
+import { Users, Settings, LogOut, Home, Sun, Moon } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
+import { useTheme } from "../../theme/ThemeContext";
 
 export default function AdminLayout() {
   const location = useLocation();
@@ -9,8 +9,8 @@ export default function AdminLayout() {
   const { theme, toggleTheme } = useTheme();
 
   const navItems = [
-    { name: 'Users', path: '/admin/users', icon: Users },
-    { name: 'Plans & Subscriptions', path: '/admin/plans', icon: Settings },
+    { name: "Users", path: "/admin/users", icon: Users },
+    { name: "Plans & Subscriptions", path: "/admin/plans", icon: Settings },
   ];
 
   return (
@@ -27,14 +27,19 @@ export default function AdminLayout() {
       {/* Sidebar */}
       <aside className="w-full md:w-64 glass-card rounded-none border-y-0 border-l-0 z-10 flex flex-col">
         <div className="p-6 border-b border-border/50">
-          <Link to="/" className="flex items-center gap-2 hover:text-primary transition-colors">
+          <Link
+            to="/"
+            className="flex items-center gap-2 hover:text-primary transition-colors"
+          >
             <div className="w-8 h-8 rounded bg-primary/20 flex items-center justify-center border border-primary/50">
               <span className="font-bold text-primary">C</span>
             </div>
-            <span className="font-bold text-xl tracking-tight text-foreground">Admin Panel</span>
+            <span className="font-bold text-xl tracking-tight text-foreground">
+              Admin Panel
+            </span>
           </Link>
         </div>
-        
+
         <nav className="flex-1 p-4 space-y-2">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -44,9 +49,9 @@ export default function AdminLayout() {
                 key={item.name}
                 to={item.path}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                  isActive 
-                    ? 'bg-primary/20 text-primary border border-primary/30' 
-                    : 'text-muted-foreground hover:bg-foreground/5 hover:text-foreground'
+                  isActive
+                    ? "bg-primary/20 text-primary border border-primary/30"
+                    : "text-muted-foreground hover:bg-foreground/5 hover:text-foreground"
                 }`}
               >
                 <Icon className="h-5 w-5" />
@@ -57,18 +62,25 @@ export default function AdminLayout() {
         </nav>
 
         <div className="p-4 border-t border-border/50 space-y-2">
-          <button 
+          <button
             onClick={toggleTheme}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-foreground/5 hover:text-foreground transition-colors"
           >
-            {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            {theme === "dark" ? (
+              <Sun className="h-5 w-5" />
+            ) : (
+              <Moon className="h-5 w-5" />
+            )}
             <span className="font-medium">Toggle Theme</span>
           </button>
-          <Link to="/" className="flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-foreground/5 hover:text-foreground transition-colors">
+          <Link
+            to="/"
+            className="flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-foreground/5 hover:text-foreground transition-colors"
+          >
             <Home className="h-5 w-5" />
             <span className="font-medium">Back to App</span>
           </Link>
-          <button 
+          <button
             onClick={logout}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-500 hover:bg-red-500/10 transition-colors"
           >

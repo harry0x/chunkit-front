@@ -1,15 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import {
-  Scissors,
-  Sparkles,
-  Sun,
-  Moon,
-  User,
-  Crown,
-  LogOut,
-  Shield,
-} from "lucide-react";
+import { Scissors, Sun, Moon, User, Crown, LogOut, Shield } from "lucide-react";
 import { useTheme } from "../theme/ThemeContext";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";

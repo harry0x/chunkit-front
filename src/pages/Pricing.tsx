@@ -26,13 +26,25 @@ interface Plan {
   planType: "monthly" | "half-yearly" | "yearly";
   priceInr: string;
   features: string[];
+  isPopular?: boolean;
 }
 
 export default function Pricing() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
   const [buyingPlan, setBuyingPlan] = useState<string | null>(null);
+  const [activePlan, setActivePlan] = useState<string | null>(null);
   const { user } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      api.get("/user/profile").then(res => {
+        if (res.data.subscription?.status === "active") {
+          setActivePlan(res.data.subscription.planType);
+        }
+      }).catch(console.error);
+    }
+  }, [user]);
 
   useEffect(() => {
     const loadPlans = async () => {
@@ -156,12 +168,26 @@ export default function Pricing() {
           <Loader2 className="h-12 w-12 animate-spin text-primary relative z-10" />
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl w-full z-10 relative">
-            {plans.map((plan) => (
+            {plans.map((plan) => {
+              const planLevel = { "monthly": 1, "half-yearly": 2, "yearly": 3 };
+              const currentLevel = activePlan ? planLevel[activePlan as keyof typeof planLevel] : 0;
+              const thisLevel = planLevel[plan.planType as keyof typeof planLevel];
+              
+              const isActive = activePlan === plan.planType;
+              const isLowerOrEqual = currentLevel >= thisLevel;
+              const isDisabled = isLowerOrEqual || buyingPlan === plan.planType;
+              
+              let buttonText = "Subscribe";
+              if (isActive) buttonText = "Current Plan";
+              else if (isLowerOrEqual) buttonText = "Included";
+              else if (activePlan) buttonText = "Upgrade";
+
+              return (
               <Card
                 key={plan.id}
-                className="glass-card flex flex-col transition-all hover:border-primary/50 hover:shadow-[0_0_30px_rgba(139,92,246,0.15)] relative overflow-hidden group"
+                className={`glass-card flex flex-col transition-all hover:border-primary/50 relative overflow-hidden group ${plan.isPopular ? "hover:shadow-[0_0_30px_rgba(139,92,246,0.15)] ring-1 ring-primary/20" : "hover:shadow-lg"}`}
               >
-                {plan.planType === "yearly" && (
+                {plan.isPopular && (
                   <div className="absolute top-5 right-5 text-xs font-bold px-3 py-1 bg-primary/20 text-primary rounded-full border border-primary/30">
                     Best Value
                   </div>
@@ -206,20 +232,22 @@ export default function Pricing() {
                 </CardContent>
                 <CardFooter>
                   <Button
-                    className={`w-full text-lg h-12 border-none ${plan.planType === "yearly" ? "gradient-btn text-white" : "bg-background/50 hover:bg-background/80 text-foreground"}`}
-                    variant="default"
+                    className={`w-full text-lg h-12 border-none cursor-pointer ${plan.isPopular && !isDisabled ? "gradient-btn text-white" : "bg-primary/10 hover:bg-primary/20 text-primary"} ${isDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
+                    variant={plan.isPopular ? "default" : "secondary"}
                     onClick={() => handleSubscribe(plan.planType)}
-                    disabled={buyingPlan === plan.planType}
+                    disabled={isDisabled}
                   >
-                    {buyingPlan === plan.planType ? (
-                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    ) : (
-                      "Subscribe"
-                    )}
+                    <span>
+                      {buyingPlan === plan.planType ? (
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      ) : (
+                        buttonText
+                      )}
+                    </span>
                   </Button>
                 </CardFooter>
               </Card>
-            ))}
+            )})}
           </div>
         )}
       </main>
