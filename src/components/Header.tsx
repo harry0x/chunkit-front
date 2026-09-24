@@ -1,35 +1,11 @@
-import { useState, useRef, useEffect } from "react";
+
 import { motion } from "framer-motion";
-import { Scissors, Sun, Moon, User, Crown, LogOut, Shield } from "lucide-react";
+import { Scissors, Sun, Moon } from "lucide-react";
 import { useTheme } from "../theme/ThemeContext";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { Link } from "react-router-dom";
 
 export function Header() {
   const { theme, toggleTheme } = useTheme();
-  const { user, isAuthenticated, logout } = useAuth();
-  const navigate = useNavigate();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const handleLogout = () => {
-    logout();
-    setDropdownOpen(false);
-    navigate("/");
-  };
 
   return (
     <motion.header

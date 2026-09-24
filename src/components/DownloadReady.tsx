@@ -1,9 +1,6 @@
 import { motion } from "framer-motion";
 import { CheckCircle2, Download, Layers, RotateCcw } from "lucide-react";
-import { api, getDownloadUrl } from "../lib/api";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import { useAuth } from "../context/AuthContext";
+import { getDownloadUrl } from "../lib/api";
 
 interface DownloadReadyProps {
   jobId: string;

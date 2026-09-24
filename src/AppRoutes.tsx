@@ -1,9 +1,10 @@
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from './context/AuthContext';
-import { Loader2 } from 'lucide-react';
+import { Routes, Route } from 'react-router-dom';
+// import { useAuth } from './context/AuthContext';
+// import { Loader2 } from 'lucide-react';
 
 // Pages to be created
 import Landing from './pages/Landing';
+/*
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import ForgotPassword from './pages/auth/ForgotPassword';
@@ -45,6 +46,7 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
 
   return <>{children}</>;
 };
+*/
 
 export function AppRoutes() {
   return (
