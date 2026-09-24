@@ -50,20 +50,19 @@ export function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
+      {/* Auth and Membership routes commented out
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/pricing" element={<Pricing />} />
       
-      {/* Protected routes */}
       <Route path="/profile" element={
         <PrivateRoute>
           <Profile />
         </PrivateRoute>
       } />
       
-      {/* Admin routes */}
       <Route path="/admin" element={
         <AdminRoute>
           <AdminLayout />
@@ -73,6 +72,7 @@ export function AppRoutes() {
         <Route path="users" element={<UsersList />} />
         <Route path="plans" element={<ManagePlans />} />
       </Route>
+      */}
     </Routes>
   );
 }

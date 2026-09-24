@@ -95,8 +95,9 @@ export function Header() {
           </div>
         </Link>
 
-        {/* Right side: Auth, Subscription, Theme Toggle */}
+        {/* Right side: Theme Toggle (Auth & Membership commented out) */}
         <div className="flex items-center gap-2">
+          {/* 
           {isAuthenticated ? (
             <div className="flex items-center gap-2 mr-1 sm:mr-2">
               {user?.role !== "admin" && (
@@ -171,7 +172,8 @@ export function Header() {
             >
               Sign in
             </Link>
-          )}
+          )} 
+          */}
 
           {/* Theme Toggle */}
           <motion.button

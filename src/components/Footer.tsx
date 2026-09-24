@@ -107,7 +107,7 @@ export function Footer() {
             By using ChunkIt, you confirm you have the right to process the
             uploaded content. No illegal/copyrighted content.
           </p>
-          {/* <p
+          <p
             style={{
               fontSize: "0.6875rem",
               color: "var(--footer-text)",
@@ -123,7 +123,7 @@ export function Footer() {
             >
               harry0x
             </span>
-          </p> */}
+          </p>
         </div>
       </div>
     </motion.footer>

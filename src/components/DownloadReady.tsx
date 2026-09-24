@@ -18,29 +18,10 @@ export function DownloadReady({
   fileName,
   onReset,
 }: DownloadReadyProps) {
-  const navigate = useNavigate();
-  const { isAuthenticated, token } = useAuth();
+  // Removed auth and navigation variables since download is now public
 
   const handleDownload = async () => {
-    if (isAuthenticated && token) {
-      try {
-        const response = await api.get('/user/profile');
-        const subscription = response.data.subscription;
-        if (subscription && subscription.status === 'active') {
-          window.open(`${getDownloadUrl(jobId)}?token=${token}`, "_blank");
-        } else {
-          localStorage.setItem("pendingJob", JSON.stringify({ jobId, chunkCount, fileName }));
-          toast.info("An active subscription is required. Redirecting to pricing...");
-          navigate("/pricing");
-        }
-      } catch (error) {
-        toast.error("Failed to verify subscription status.");
-      }
-    } else {
-      localStorage.setItem("pendingJob", JSON.stringify({ jobId, chunkCount, fileName }));
-      toast.info("Authentication required! Please login or register to download your zip.");
-      navigate("/login");
-    }
+    window.open(getDownloadUrl(jobId), "_blank");
   };
 
   return (
